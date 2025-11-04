@@ -4,7 +4,7 @@
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 FPS = 60
-TITLE = "AI Sonic Platformer"
+TITLE = "Optimus Prime: Adaptive Platformer"
 
 # Physics Constants
 GRAVITY = 0.8
@@ -17,6 +17,7 @@ PLAYER_ACCELERATION = 0.6
 PLAYER_MAX_SPEED = 12
 PLAYER_JUMP_POWER = 16
 PLAYER_SIZE = (48, 64)  # Increased size for better visibility
+CHARACTER_SPRITE = "optimus_prime"
 
 # Camera Settings
 CAMERA_SMOOTH = 0.1
