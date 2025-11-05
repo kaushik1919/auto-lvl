@@ -30,6 +30,7 @@ class Level:
         
         self.width = LEVEL_WIDTH
         self.height = LEVEL_HEIGHT
+        self.spawn_point = (100, 600)
         
         # Entity lists
         self.platforms = []
@@ -141,6 +142,7 @@ class Level:
         spawn_x = 100
         spawn_y = 520
         self.platforms.append(Platform(spawn_x - 50, spawn_y, 200, 20))
+        self.spawn_point = (spawn_x, spawn_y - PLAYER_SIZE[1])
 
         current_x = 350
         current_y = 650

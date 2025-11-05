@@ -32,12 +32,13 @@ def main():
     running = True
     
     print("=" * 60)
-    print("AI-Driven Adaptive Sonic Platformer")
+    print(TITLE)
     print("=" * 60)
     print("Controls:")
     print("  Arrow Keys / WASD - Move")
     print("  Space / Up Arrow - Jump")
-    print("  ESC - Pause")
+    print("  P - Pause / Resume")
+    print("  ESC - Quit (Menus)")
     print("=" * 60)
     print("Starting game...")
     print()
@@ -51,6 +52,9 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             engine.handle_event(event)
+
+        if getattr(engine, "should_exit", False):
+            running = False
         
         # Update game state
         engine.update(dt)

@@ -36,10 +36,42 @@ class MetricsTracker:
         self.ensure_csv_exists()
     
     def ensure_csv_exists(self):
-        """Create CSV file with headers if it doesn't exist."""
-        # Create data directory
-        os.makedirs(os.path.dirname(METRICS_FILE), exist_ok=True)
-        
+        """Create CSV file with headers if it doesn't exist.
+
+        This method is defensive: if the configured `METRICS_FILE` parent
+        directory can't be created (common when the EXE runs from a
+        read-only location), it falls back to a per-user directory under the
+        user's home directory and updates the module-level `METRICS_FILE` so
+        that subsequent reads/writes go to a writable location.
+        """
+        global METRICS_FILE
+        try:
+            from pathlib import Path
+
+            metrics_path = Path(METRICS_FILE)
+            parent = metrics_path.parent
+
+            # If parent is empty (relative path without folder), use project CWD
+            if str(parent) == '' or str(parent) == '.':
+                parent = Path('.')
+
+            # Try to create the directory where METRICS_FILE points
+            try:
+                parent.mkdir(parents=True, exist_ok=True)
+            except Exception as e:
+                # Fall back to the user's home local data folder
+                fallback = Path(os.path.expanduser('~')) / '.level-gen' / 'data'
+                try:
+                    fallback.mkdir(parents=True, exist_ok=True)
+                    metrics_path = fallback / metrics_path.name
+                    METRICS_FILE = str(metrics_path)
+                    parent = fallback
+                except Exception as e2:
+                    print(f"Warning: could not create fallback metrics directory '{fallback}': {e2}")
+                    print(f"Original error creating '{parent}': {e}")
+        except Exception as e:
+            print(f"Warning: metrics directory setup failed: {e}")
+
         if not os.path.exists(METRICS_FILE):
             df = pd.DataFrame(columns=[
                 'timestamp',
@@ -58,6 +90,9 @@ class MetricsTracker:
             ])
             df.to_csv(METRICS_FILE, index=False)
             print(f"Created metrics file: {METRICS_FILE}")
+        else:
+            # Helpful debug: show where metrics are expected to be written
+            print(f"Metrics file already exists or will be at: {METRICS_FILE}")
     
     def update(self, player, level):
         """
